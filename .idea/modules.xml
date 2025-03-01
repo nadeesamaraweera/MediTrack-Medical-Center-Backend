@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/medi-track-hospital-management-system-backend.iml" filepath="$PROJECT_DIR$/medi-track-hospital-management-system-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MediTrack-Medical-Center-Backend.iml" filepath="$PROJECT_DIR$/MediTrack-Medical-Center-Backend.iml" />
     </modules>
   </component>
 </project>
