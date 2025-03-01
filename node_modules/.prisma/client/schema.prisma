@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ✅ New Department Model
+model Department {
+  departmentId     String   @id
+  departmentName   String
+  departmentEmail  String   @unique
+  location         String
+  headOfDepartment String
+  phoneNumber      String
+  doctors          Doctor[]
+  nurses           Nurse[]
+}
+
+// ✅ User Model
+model User {
+  id       Int     @id @default(autoincrement())
+  username String  @unique
+  password String
+  name     String?
+  role     String?
+}
+
+// ✅ Doctor Model (Many-to-One with Department)
+model Doctor {
+  doctorId       String          @id
+  doctorName     String
+  specialty      String
+  doctorImg      String          @db.Text
+  gender         String
+  contactNumber  String
+  email          String          @unique
+  departmentId   String
+  department     Department      @relation(fields: [departmentId], references: [departmentId]) // Many-to-one relationship
+  Appointment    Appointment[]
+  medicalReports MedicalReport[]
+}
+
+// ✅ Nurse Model (Many-to-One with Department)
+model Nurse {
+  nurseId       String     @id
+  nurseName     String
+  nurseImg      String     @db.Text
+  gender        String
+  contactNumber String
+  qualification String
+  email         String     @unique
+  departmentId  String
+  department    Department @relation(fields: [departmentId], references: [departmentId]) // Many-to-one relationship
+}
+
+// ✅ Patient Model
+model Patient {
+  patientId        String          @id
+  patientName      String
+  age              String
+  patientImg       String          @db.Text
+  addressLine1     String
+  addressLine2     String
+  postalCode       String
+  gender           String
+  contactNumber    String
+  blood_type       String
+  chronic_diseases String
+  last_visit_date  String
+  MedicalReport    MedicalReport[]
+  Appointment      Appointment[]
+  Payment          Payment[]
+}
+
+// ✅ Medical Report Model
+model MedicalReport {
+  medicalReportId String  @id
+  reportDate      String
+  testResults     Json
+  notes           String
+  patientId       String
+  patientName     String
+  patient         Patient @relation(fields: [patientId], references: [patientId])
+  doctorId        String
+  doctor          Doctor  @relation(fields: [doctorId], references: [doctorId])
+}
+
+// ✅ Appointment Model
+model Appointment {
+  appointmentCode   String  @id
+  appointmentDate   String
+  appointmentTime   String
+  doctorId          String
+  doctor            Doctor  @relation(fields: [doctorId], references: [doctorId]) // Many-to-One Relationship
+  patientId         String
+  patient           Patient @relation(fields: [patientId], references: [patientId]) // Many-to-One Relationship
+  appointmentType   String
+  appointmentStatus String
+}
+
+// ✅ Medicine Model
+model Medicine {
+  medicineId        String                   @id
+  medicineName      String
+  brand             String
+  medicineImg       String                   @db.Text
+  dosage_form       String
+  unit_price        String
+  quantity_in_stock Int
+  expiry_date       String
+  PaymentDetails    MedicinePaymentDetails[]
+}
+
+// ✅ Payment Model
+model Payment {
+  paymentId      String                   @id
+  paymentDate    String
+  patient        Patient                  @relation(fields: [patientId], references: [patientId], onDelete: Cascade)
+  patientId      String
+  paymentDetails MedicinePaymentDetails[]
+}
+
+// ✅ Medicine Payment Details Model
+model MedicinePaymentDetails {
+  medicinePaymentDetailsId Int      @id @default(autoincrement())
+  payment                  Payment  @relation(fields: [paymentId], references: [paymentId], onDelete: Cascade)
+  paymentId                String
+  medicine                 Medicine @relation(fields: [medicineId], references: [medicineId], onDelete: Cascade)
+  medicineId               String
+  getQty                   Int
+  price                    String
+  totalPrice               String
+}
